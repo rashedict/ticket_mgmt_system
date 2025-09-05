@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container-fluid py-4">
+    <center><h4 class="mb-4">Ticket Report</h4></center>
+    
+    <form method="get" class="mb-4">
+        <div class="row align-items-end">
+            <div class="col-md-3 col-sm-6 mb-2">
+                <label for="id_start_date" class="form-label">Start Date:</label>
+                {{ form.start_date }}
+            </div>
+            <div class="col-md-3 col-sm-6 mb-2">
+                <label for="id_end_date" class="form-label">End Date:</label>
+                {{ form.end_date }}
+            </div>
+            <div class="col-md-3 col-sm-6 mb-2">
+                <label for="id_status" class="form-label">Status:</label>
+                {{ form.status }}
+            </div>
+            <div class="col-md-3 col-sm-6 mb-2">
+                <button type="submit" class="btn btn-primary w-100">Filter</button>
+            </div>
+        </div>
+    </form>
+    
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th>Title</th>
+                    <th>Type</th>
+                    <th>Status</th>
+                    <th>Created By</th>
+                    <th>Assigned To</th>
+                    <th>Created At</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ticket in tickets %}
+                <tr>
+                    <td>{{ ticket.title }}</td>
+                    <td>{{ ticket.ticket_type }}</td>
+                    <td>
+                        <span class="badge 
+                            {% if ticket.status == 'open' %}bg-success
+                            {% elif ticket.status == 'in_progress' %}bg-warning
+                            {% elif ticket.status == 'resolved' %}bg-info
+                            {% elif ticket.status == 'closed' %}bg-secondary
+                            {% else %}bg-light text-dark{% endif %}">
+                            {{ ticket.get_status_display }}
+                        </span>
+                    </td>
+                    <td>{{ ticket.created_by.username }}</td>
+                    <td>{{ ticket.assigned_to.username|default:"Unassigned" }}</td>
+                    <td>{{ ticket.created_at|date:"M d, Y H:i" }}</td>
+                    <td>
+                        <div class="btn-group" role="group">
+                            <a href="{% url 'ticket_detail' ticket.pk %}" class="btn btn-info btn-sm">View</a>
+                            <a href="{% url 'ticket_update' ticket.pk %}" class="btn btn-warning btn-sm">Update</a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center py-4">
+                        <div class="text-muted">No tickets found.</div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<style>
+.form-label {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+/* Style form inputs to be consistent */
+#id_start_date, #id_end_date, #id_status {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #ced4da;
+    border-radius: 0.375rem;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #fff;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+#id_start_date:focus, #id_end_date:focus, #id_status:focus {
+    border-color: #86b7fe;
+    outline: 0;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* Button styling */
+.btn-primary {
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+}
+
+/* Table styling */
+.table th {
+    font-weight: 600;
+    background-color: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(0, 0, 0, 0.075);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .row.align-items-end {
+        flex-direction: column;
+        align-items: stretch !important;
+    }
+    
+    .col-md-3, .col-sm-6 {
+        margin-bottom: 1rem;
+    }
+    
+    .btn-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+    
+    .btn-group .btn {
+        width: 100%;
+    }
+}
+
+/* Badge styling for status */
+.badge {
+    font-size: 0.75em;
+    padding: 0.4em 0.6em;
+}
+</style>
+
+<script>
+// Add datepicker functionality if needed
+document.addEventListener('DOMContentLoaded', function() {
+    // You can initialize a datepicker here if needed
+    // Example for flatpickr or other datepicker libraries:
+    /*
+    flatpickr("#id_start_date", {
+        dateFormat: "Y-m-d",
+        allowInput: true
+    });
+    flatpickr("#id_end_date", {
+        dateFormat: "Y-m-d",
+        allowInput: true
+    });
+    */
+});
+</script>
+{% endblock %}

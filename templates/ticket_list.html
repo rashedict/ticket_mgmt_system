@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% block content %}
+<center><h2>Ticket List</h2></center>
+<form method="get" class="mb-3">
+    <input type="text" name="search" placeholder="Search tickets..." value="{{ request.GET.search }}">
+    <button type="submit" class="btn btn-primary">Search</button>
+</form>
+
+<!-- Show only 20 newest tickets -->
+{% with tickets|slice:":20" as recent_tickets %}
+<table class="table">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Type</th>
+            <th>Status</th>
+            <th>Created By</th>
+            <th>Assigned To</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for ticket in recent_tickets %}
+        <tr>
+            <td>{{ ticket.title }}</td>
+            <td>{{ ticket.ticket_type }}</td>
+            <td>
+                <span class="badge 
+                    {% if ticket.status == 'solved' %}bg-success
+                    {% elif ticket.status == 'in_process' %}bg-primary
+                    {% else %}bg-warning{% endif %}">
+                    {{ ticket.get_status_display }}
+                </span>
+            </td>
+            <td>{{ ticket.created_by.username }}</td>
+            <td>
+                {% if ticket.assigned_to %}
+                    <span class="badge bg-info">{{ ticket.assigned_to.username }}</span>
+                {% else %}
+                    {% if ticket.created_by.profile.role == 'normal' %}
+                        {% if support_users %}
+                            <span class="badge bg-secondary">Assigning...</span>
+                        {% else %}
+                            <span class="badge bg-danger">No support staff</span>
+                        {% endif %}
+                    {% else %}
+                        <span class="badge bg-light text-dark">Unassigned</span>
+                    {% endif %}
+                {% endif %}
+            </td>
+            <td>
+                <div class="btn-group" role="group">
+                    <a href="{% url 'ticket_detail' ticket.pk %}" class="btn btn-info btn-sm">
+                        <i class="bi bi-eye"></i> View
+                    </a>
+                    
+                    <!-- Update button with permission check -->
+                    {% if user.profile.role == 'support' or user.profile.role == 'admin' or ticket.status != 'solved' %}
+                        <a href="{% url 'ticket_update' ticket.pk %}" class="btn btn-warning btn-sm">
+                            <i class="bi bi-pencil"></i> Update
+                        </a>
+                    {% else %}
+                        <button class="btn btn-warning btn-sm" disabled title="Cannot update solved tickets">
+                            <i class="bi bi-pencil"></i> Update
+                        </button>
+                    {% endif %}
+                </div>
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6" class="text-center">No tickets found.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- Show message if there are more than 20 tickets -->
+{% if tickets.count > 20 %}
+{% endif %}
+{% endwith %}
+
+<!-- Add Bootstrap Icons CDN if not already included -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+
+<style>
+    .btn-group .btn {
+        margin-right: 5px;
+    }
+    .btn-group .btn:last-child {
+        margin-right: 0;
+    }
+    .badge {
+        font-size: 0.85em;
+    }
+    
+    /* Style for disabled button */
+    .btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+</style>
+{% endblock %}

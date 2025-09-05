@@ -1,0 +1,119 @@
+```html
+{% extends 'base.html' %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow-sm border-0 mt-4">
+            <div class="card-header bg-primary text-white">
+                <h2 class="mb-0">
+                    {% if object %}Update Ticket{% else %}Create Ticket{% endif %}
+                </h2>
+            </div>
+            <div class="card-body">
+                <form method="post" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="id_title" class="form-label fw-semibold">Title <span class="text-danger">*</span></label>
+                        <input type="text" name="title" id="id_title" class="form-control" value="{{ form.title.value|default_if_none:'' }}" required>
+                        {% for error in form.title.errors %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_description" class="form-label fw-semibold">Description <span class="text-danger">*</span></label>
+                        <textarea name="description" id="id_description" class="form-control" required>{{ form.description.value|default_if_none:'' }}</textarea>
+                        {% for error in form.description.errors %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_ticket_type" class="form-label fw-semibold">Ticket Type <span class="text-danger">*</span></label>
+                        <select name="ticket_type" id="id_ticket_type" class="form-select" required>
+                            {% for value, label in form.ticket_type.field.choices %}
+                            <option value="{{ value }}" {% if form.ticket_type.value == value %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                        {% for error in form.ticket_type.errors %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_status" class="form-label fw-semibold">Status</label>
+                        <select name="status" id="id_status" class="form-select">
+                            {% for value, label in form.status.field.choices %}
+                            <option value="{{ value }}" {% if form.status.value == value %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                        {% for error in form.status.errors %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            {% if object %}Update{% else %}Create{% endif %}
+                        </button>
+                        <a href="{% url 'ticket_list' %}" class="btn btn-secondary btn-lg">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.card {
+    border-radius: 10px;
+    transition: transform 0.2s;
+}
+.card:hover {
+    transform: translateY(-5px);
+}
+.card-header {
+    border-radius: 10px 10px 0 0;
+}
+.form-label {
+    font-weight: 500;
+}
+.btn-primary {
+    background-color: #007bff;
+    border: none;
+    transition: background-color 0.3s;
+}
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+.btn-secondary {
+    transition: background-color 0.3s;
+}
+.btn-secondary:hover {
+    background-color: #5a6268;
+}
+.invalid-feedback {
+    display: none;
+}
+.form-control.is-invalid, .form-select.is-invalid {
+    border-color: #dc3545;
+}
+.form-control.is-invalid ~ .invalid-feedback, .form-select.is-invalid ~ .invalid-feedback {
+    display: block;
+}
+</style>
+
+<script>
+// Bootstrap form validation
+(function () {
+    'use strict';
+    const forms = document.querySelectorAll('.needs-validation');
+    Array.from(forms).forEach(form => {
+        form.addEventListener('submit', event => {
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            form.classList.add('was-validated');
+        }, false);
+    });
+})();
+</script>
+{% endblock %}
+```

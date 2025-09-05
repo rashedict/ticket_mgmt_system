@@ -1,0 +1,9 @@
+resources:
+  - configmap.yaml
+  - secret.yaml
+  - mysql-deployment.yaml
+  - mysql-service.yaml
+  - redis-deployment.yaml
+  - redis-service.yaml
+  - django-deployment.yaml
+  - django-service.yaml

@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-tags me-2"></i>Ticket Types</h2>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createTicketTypeModal">
+            <i class="bi bi-plus-circle me-1"></i>Add New Type
+        </button>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            {% if ticket_types %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Name</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for type in ticket_types %}
+                        <tr>
+                            <td>{{ type.name }}</td>
+                            <td>
+                                <a href="{% url 'ticket_type_update' type.pk %}" class="btn btn-sm btn-outline-primary me-1">
+                                    <i class="bi bi-pencil"></i> Edit
+                                </a>
+                                <button type="button" class="btn btn-sm btn-outline-danger" 
+                                        data-bs-toggle="modal" data-bs-target="#deleteTicketTypeModal"
+                                        data-type-id="{{ type.id }}" data-type-name="{{ type.name }}">
+                                    <i class="bi bi-trash"></i> Delete
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-tags display-4 text-muted"></i>
+                <p class="mt-3 text-muted">No ticket types found. Add your first ticket type to get started.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Create Ticket Type Modal -->
+<div class="modal fade" id="createTicketTypeModal" tabindex="-1" aria-labelledby="createTicketTypeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createTicketTypeModalLabel">Create New Ticket Type</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" action="{% url 'ticket_type_create' %}">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="ticketTypeName" class="form-label">Type Name</label>
+                        <input type="text" class="form-control" id="ticketTypeName" name="name" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Create</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Ticket Type Modal -->
+<div class="modal fade" id="deleteTicketTypeModal" tabindex="-1" aria-labelledby="deleteTicketTypeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteTicketTypeModalLabel">Delete Ticket Type</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" action="" id="deleteTicketTypeForm">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <p>Are you sure you want to delete the ticket type: <strong id="deleteTypeName"></strong>?</p>
+                    <p class="text-danger">This action cannot be undone.</p>
+                    <input type="hidden" id="deleteTicketTypeId" name="type_id">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+.card {
+    border: none;
+    border-radius: 10px;
+}
+
+.table th {
+    border-top: none;
+    font-weight: 600;
+    color: #495057;
+    background-color: #f8f9fa;
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(0, 0, 0, 0.03);
+}
+
+.btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Delete modal handler
+    var deleteModal = document.getElementById('deleteTicketTypeModal');
+    if (deleteModal) {
+        deleteModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            var typeId = button.getAttribute('data-type-id');
+            var typeName = button.getAttribute('data-type-name');
+            
+            var typeNameSpan = deleteModal.querySelector('#deleteTypeName');
+            var typeIdInput = deleteModal.querySelector('#deleteTicketTypeId');
+            var form = deleteModal.querySelector('#deleteTicketTypeForm');
+            
+            typeNameSpan.textContent = typeName;
+            typeIdInput.value = typeId;
+            form.action = "{% url 'ticket_type_delete' 0 %}".replace('0', typeId);
+        });
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,277 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container-fluid mt-3">
+    <div class="row justify-content-center">
+        <div class="col-lg-10 col-xl-9">
+            <!-- Ticket Header -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2 class="h3 mb-0">{{ object.title }}</h2>
+                <div>
+                    <span class="badge bg-secondary me-2">#{{ object.id }}</span>
+                    <span class="badge 
+                        {% if object.status == 'solved' %}bg-success
+                        {% elif object.status == 'in_process' %}bg-primary
+                        {% else %}bg-warning{% endif %}">
+                        {{ object.get_status_display }}
+                    </span>
+                </div>
+            </div>
+            
+            <!-- Main Content - Side by Side Layout -->
+            <div class="row g-3">
+                <!-- Left Column - Ticket Information -->
+                <div class="col-xl-6">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header bg-light py-2 d-flex justify-content-between align-items-center">
+                            <h5 class="card-title mb-0">Ticket Information</h5>
+                            <span class="badge bg-info">{{ object.ticket_type }}</span>
+                        </div>
+                        <div class="card-body p-3">
+                            <h6 class="text-muted border-bottom pb-2 mb-2">Description</h6>
+                            <div class="p-2 bg-light rounded mb-3">
+                                {{ object.description }}
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6 class="text-muted border-bottom pb-2 mb-2">Details</h6>
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item d-flex justify-content-between px-0 py-2">
+                                            <span class="fw-medium">Created By:</span>
+                                            <span>{{ object.created_by.username }}</span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between px-0 py-2">
+                                            <span class="fw-medium">Assigned To:</span>
+                                            <span>
+                                                {% if object.assigned_to %}
+                                                    <span class="badge bg-info">{{ object.assigned_to.username }}</span>
+                                                {% else %}
+                                                    <span class="badge bg-secondary">Unassigned</span>
+                                                {% endif %}
+                                            </span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between px-0 py-2">
+                                            <span class="fw-medium">Priority:</span>
+                                            <span class="badge
+                                                {% if object.priority == 'high' %}bg-danger
+                                                {% elif object.priority == 'medium' %}bg-warning
+                                                {% else %}bg-secondary{% endif %}">
+                                                {{ object.get_priority_display|default:"Normal" }}
+                                            </span>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6 class="text-muted border-bottom pb-2 mb-2">Timestamps</h6>
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item d-flex justify-content-between px-0 py-2">
+                                            <span class="fw-medium">Created:</span>
+                                            <span>{{ object.created_at|date:"M d, Y H:i" }}</span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between px-0 py-2">
+                                            <span class="fw-medium">Updated:</span>
+                                            <span>{{ object.updated_at|date:"M d, Y H:i" }}</span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between px-0 py-2">
+                                            <span class="fw-medium">Age:</span>
+                                            <span>{{ object.created_at|timesince }}</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <!-- Action Buttons -->
+                            <div class="d-flex gap-2 mt-3 pt-3 border-top">
+                                <a href="{% url 'ticket_update' object.pk %}" class="btn btn-warning">
+                                    <i class="bi bi-pencil-square"></i> Update Ticket
+                                </a>
+                                <a href="{% url 'ticket_list' %}" class="btn btn-secondary">
+                                    <i class="bi bi-arrow-left"></i> Back to List
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Right Column - Activity Timeline -->
+                <div class="col-xl-6">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header bg-light py-2">
+                            <h5 class="card-title mb-0">Activity Timeline</h5>
+                        </div>
+                        <div class="card-body p-3">
+                            <div class="timeline">
+                                <div class="timeline-item">
+                                    <div class="timeline-marker bg-primary"></div>
+                                    <div class="timeline-content">
+                                        <div class="d-flex justify-content-between">
+                                            <h6 class="mb-0">Ticket Created</h6>
+                                            <small class="text-muted">{{ object.created_at|timesince }} ago</small>
+                                        </div>
+                                        <p class="text-muted mb-0">by {{ object.created_by.username }}</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="timeline-item">
+                                    <div class="timeline-marker bg-success"></div>
+                                    <div class="timeline-content">
+                                        <div class="d-flex justify-content-between">
+                                            <h6 class="mb-0">Status Updated</h6>
+                                            <small class="text-muted">{{ object.updated_at|timesince }} ago</small>
+                                        </div>
+                                        <p class="text-muted mb-0">Changed to {{ object.get_status_display }}</p>
+                                    </div>
+                                </div>
+                                
+                                {% if object.assigned_to %}
+                                <div class="timeline-item">
+                                    <div class="timeline-marker bg-info"></div>
+                                    <div class="timeline-content">
+                                        <div class="d-flex justify-content-between">
+                                            <h6 class="mb-0">Assigned to Support</h6>
+                                            <small class="text-muted">{{ object.updated_at|timesince }} ago</small>
+                                        </div>
+                                        <p class="text-muted mb-0">Assigned to {{ object.assigned_to.username }}</p>
+                                    </div>
+                                </div>
+                                {% endif %}
+                                
+                                <!-- Sample comment activity -->
+                                <div class="timeline-item">
+                                    <div class="timeline-marker bg-warning"></div>
+                                    <div class="timeline-content">
+                                        <div class="d-flex justify-content-between">
+                                            <h6 class="mb-0">Comment Added</h6>
+                                            <small class="text-muted">2 hours ago</small>
+                                        </div>
+                                        <p class="text-muted mb-0">"Looking into this issue now"</p>
+                                        <small class="text-muted">- Support Agent</small>
+                                    </div>
+                                </div>
+                                
+                                <!-- Sample attachment activity -->
+                                <div class="timeline-item">
+                                    <div class="timeline-marker bg-secondary"></div>
+                                    <div class="timeline-content">
+                                        <div class="d-flex justify-content-between">
+                                            <h6 class="mb-0">Attachment Added</h6>
+                                            <small class="text-muted">1 hour ago</small>
+                                        </div>
+                                        <p class="text-muted mb-0">screenshot.png</p>
+                                        <small class="text-muted">- {{ object.created_by.username }}</small>
+                                    </div>
+                                </div>
+                                
+                                <!-- Sample resolution activity -->
+                                <div class="timeline-item">
+                                    <div class="timeline-marker bg-success"></div>
+                                    <div class="timeline-content">
+                                        <div class="d-flex justify-content-between">
+                                            <h6 class="mb-0">Resolution Note</h6>
+                                            <small class="text-muted">30 minutes ago</small>
+                                        </div>
+                                        <p class="text-muted mb-0">"Issue resolved by updating configuration"</p>
+                                        <small class="text-muted">- {{ object.assigned_to.username|default:"Support Agent" }}</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+
+<style>
+    .container-fluid {
+        max-width: 95%;
+    }
+    
+    .card {
+        border: 1px solid rgba(0, 0, 0, 0.125);
+        border-radius: 0.5rem;
+    }
+    
+    .card-header {
+        border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+    }
+    
+    .bg-light {
+        background-color: #f8f9fa !important;
+    }
+    
+    /* Timeline styling */
+    .timeline {
+        position: relative;
+        padding-left: 2.5rem;
+    }
+    
+    .timeline-item {
+        position: relative;
+        padding-bottom: 1.25rem;
+    }
+    
+    .timeline-marker {
+        position: absolute;
+        left: -2.5rem;
+        top: 0.3rem;
+        width: 1.1rem;
+        height: 1.1rem;
+        border-radius: 50%;
+        z-index: 2;
+    }
+    
+    .timeline-content {
+        margin-left: 0.5rem;
+    }
+    
+    .timeline-item:not(:last-child):before {
+        content: '';
+        position: absolute;
+        left: -1.95rem;
+        top: 1.4rem;
+        bottom: 0;
+        width: 2px;
+        background-color: #dee2e6;
+        z-index: 1;
+    }
+    
+    .list-group-item {
+        border-color: rgba(0, 0, 0, 0.08);
+    }
+    
+    .g-3 {
+        --bs-gutter-x: 1rem;
+        --bs-gutter-y: 1rem;
+    }
+    
+    .border-top {
+        border-top: 1px solid rgba(0, 0, 0, 0.1) !important;
+    }
+    
+    /* Font size adjustments */
+    body {
+        font-size: 1rem;
+    }
+    
+    .h3 {
+        font-size: 1.75rem;
+    }
+    
+    .h5 {
+        font-size: 1.25rem;
+    }
+    
+    .h6 {
+        font-size: 1.1rem;
+    }
+    
+    .fw-medium {
+        font-weight: 500;
+    }
+</style>
+{% endblock %}

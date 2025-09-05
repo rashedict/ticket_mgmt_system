@@ -1,0 +1,283 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+{% block content %}
+<div class="d-flex justify-content-center align-items-center min-vh-100 bg-soft-white">
+    <div class="ticket-form-container">
+        <div class="card ticket-form-card shadow-sm">
+            <div class="card-header bg-gradient-cyan text-dark">
+                <h2 class="mb-0 fw-medium">
+                    {% if object %}Update Ticket{% else %}Create Ticket{% endif %}
+                </h2>
+            </div>
+            <div class="card-body">
+                <form method="post" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    {% for field in form %}
+                    <div class="mb-2">
+                        <label for="{{ field.id_for_label }}" class="form-label fw-light text-dark">
+                            {{ field.label }}
+                            {% if field.field.required %}
+                            <span class="text-danger">*</span>
+                            {% endif %}
+                        </label>
+                        {% if field.name == 'description' %}
+                        {% render_field field class="form-control border-light rounded-3" placeholder="Enter description" aria-describedby=field.id_for_label %}
+                        {% else %}
+                        {% render_field field class="form-select border-light rounded-3 no-dropdown-icon" aria-describedby=field.id_for_label %}
+                        {% endif %}
+                        {% for error in field.errors %}
+                        <div class="invalid-feedback">
+                            {{ error }}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endfor %}
+                    <div class="d-flex justify-content-between mt-3">
+                        <button type="submit" class="btn btn-primary-light btn-sm d-flex align-items-center">
+                            <i class="bi bi-check-circle-fill me-1"></i>
+                            {% if object %}Update{% else %}Create{% endif %}
+                        </button>
+                        <a href="{% url 'ticket_list' %}" class="btn btn-secondary-light btn-sm d-flex align-items-center">
+                            <i class="bi bi-x-circle-fill me-1"></i>
+                            Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.bg-soft-white {
+    background-color: #fafafa;
+}
+
+/* Fixed container for the form */
+.ticket-form-container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 700px;
+    z-index: 1000;
+}
+
+/* Form card styling - smaller and no scroll */
+.ticket-form-card {
+    border: 1px solid transparent;
+    border-radius: 10px;
+    background: #ffffff;
+    border-image: linear-gradient(to right, #e0f7fa, #fce4ec) 1;
+    max-height: none;
+    overflow-y: visible;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Header - more compact */
+.card-header.bg-gradient-cyan {
+    background: linear-gradient(135deg, #e0f7fa, #b2ebf2);
+    border-radius: 10px 10px 0 0;
+    border-bottom: none;
+    padding: 10px 15px;
+}
+.card-header h2 {
+    font-weight: 500;
+    color: #1a237e;
+    font-size: 1.2rem;
+    margin: 0;
+    text-align: center;
+}
+
+/* Body - more compact */
+.card-body {
+    padding: 12px 15px;
+}
+
+/* Form elements - more compact */
+.form-label {
+    font-size: 0.85rem;
+    color: #37474f;
+    margin-bottom: 4px;
+    font-weight: 500;
+}
+.form-control.border-light, .form-select.border-light {
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+    padding: 6px 10px;
+    font-size: 0.85rem;
+    height: 34px;
+    background-image: none !important; /* Remove dropdown arrow */
+}
+.form-control:focus, .form-select:focus {
+    border-color: #4fc3f7;
+    box-shadow: 0 0 0 0.15rem rgba(79, 195, 247, 0.25);
+}
+
+/* Remove dropdown arrow for select elements */
+.form-select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: none;
+}
+
+/* Textarea specific styling - smaller */
+textarea.form-control {
+    min-height: 80px;
+    resize: vertical;
+}
+
+/* Buttons - more compact */
+.btn-primary-light, .btn-secondary-light {
+    border-radius: 5px;
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    height: 32px;
+}
+.btn-primary-light {
+    background-color: #b3e5fc;
+    color: #01579b;
+    border: none;
+}
+.btn-primary-light:hover {
+    background-color: #4fc3f7;
+    transform: translateY(-1px);
+}
+.btn-secondary-light {
+    background-color: #eceff1;
+    color: #455a64;
+    border: none;
+}
+.btn-secondary-light:hover {
+    background-color: #cfd8dc;
+    transform: translateY(-1px);
+}
+
+/* Reduced spacing between form elements */
+.mb-2 {
+    margin-bottom: 10px !important;
+}
+
+/* Error feedback */
+.invalid-feedback {
+    display: none;
+    color: #ef5350;
+    font-size: 0.75rem;
+    margin-top: 3px;
+}
+.form-control.is-invalid, .form-select.is-invalid {
+    border-color: #ef5350;
+}
+.form-control.is-invalid ~ .invalid-feedback, 
+.form-select.is-invalid ~ .invalid-feedback {
+    display: block;
+}
+
+/* Responsive design for different screen sizes */
+@media (max-width: 768px) {
+    .ticket-form-container {
+        width: 90%;
+        max-width: 400px;
+    }
+    
+    .card-header h2 {
+        font-size: 1.1rem;
+    }
+    
+    .btn-primary-light, .btn-secondary-light {
+        padding: 5px 10px;
+        font-size: 0.8rem;
+    }
+    
+    .form-control.border-light, .form-select.border-light {
+        padding: 5px 8px;
+    }
+}
+
+@media (max-width: 576px) {
+    .ticket-form-container {
+        width: 95%;
+        max-width: 350px;
+    }
+    
+    .ticket-form-card {
+        border-radius: 8px;
+    }
+    
+    .card-header.bg-gradient-cyan {
+        padding: 8px 10px;
+    }
+    
+    .card-body {
+        padding: 10px;
+    }
+    
+    .card-header h2 {
+        font-size: 1rem;
+    }
+    
+    .d-flex.justify-content-between {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .btn-primary-light, .btn-secondary-light {
+        width: 100%;
+        justify-content: center;
+        height: 30px;
+    }
+    
+    textarea.form-control {
+        min-height: 70px;
+    }
+}
+
+/* Animation for initial appearance */
+.ticket-form-card {
+    animation: fadeIn 0.4s ease-out;
+}
+@keyframes fadeIn {
+    from { 
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to { 
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Background overlay effect */
+.min-vh-100.bg-soft-white {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(250, 250, 250, 0.95);
+    backdrop-filter: blur(3px);
+}
+</style>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+<script>
+(function () {
+    'use strict';
+    const forms = document.querySelectorAll('.needs-validation');
+    Array.from(forms).forEach(form => {
+        form.addEventListener('submit', event => {
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            form.classList.add('was-validated');
+        }, false);
+    });
+})();
+</script>
+{% endblock %}

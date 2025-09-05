@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2 class="mb-4">Dashboard</h2>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card text-white bg-success mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Solved Tickets</h5>
+                <p class="card-text display-6">{{ total_solved }}</p>
+                {% if not is_admin %}
+                <small>Your solved tickets</small>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-white bg-warning mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Pending Tickets</h5>
+                <p class="card-text display-6">{{ total_pending }}</p>
+                {% if not is_admin %}
+                <small>Your pending tickets</small>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-white bg-info mb-3">
+            <div class="card-body">
+                <h5 class="card-title">In Process Tickets</h5>
+                <p class="card-text display-6">{{ total_in_process }}</p>
+                {% if not is_admin %}
+                <small>Your tickets in process</small>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <!-- Monthly Statistics Section -->
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Monthly Ticket Statistics</h5>
+                {% if is_admin %}
+                <p class="text-muted small mb-0">Showing all tickets (Admin view)</p>
+                {% else %}
+                <p class="text-muted small mb-0">Showing your tickets only</p>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                <canvas id="monthlyChart" width="300" height="150"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recent Tickets Section -->
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    {% if is_admin %}All Recent Tickets{% else %}Your Recent Tickets{% endif %}
+                </h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                    {% for ticket in recent_tickets %}
+                    <a href="{% url 'ticket_detail' ticket.pk %}" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6 class="mb-1">{{ ticket.title|truncatewords:4 }}</h6>
+                            <small class="text-muted">{{ ticket.created_at|date:"M d" }}</small>
+                        </div>
+                        <p class="mb-1 small">{{ ticket.description|truncatewords:3 }}</p>
+                        <div class="d-flex justify-content-between">
+                            <small class="text-{% if ticket.status == 'solved' %}success{% elif ticket.status == 'in_process' %}info{% else %}warning{% endif %}">
+                                {{ ticket.get_status_display }}
+                            </small>
+                            {% if is_admin %}
+                            <small class="text-muted">
+                                {{ ticket.created_by.username }}
+                            </small>
+                            {% endif %}
+                        </div>
+                    </a>
+                    {% empty %}
+                    <div class="p-3 text-center text-muted">No tickets found.</div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('monthlyChart').getContext('2d');
+    const data = {{ chart_data | safe }};
+    new Chart(ctx, {
+        type: 'bar',
+        data: data,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: { 
+                y: { 
+                    beginAtZero: true,
+                    ticks: {
+                        precision: 0
+                    }
+                } 
+            },
+            plugins: {
+                legend: {
+                    position: 'top',
+                }
+            }
+        }
+    });
+</script>
+
+{% endblock %}
