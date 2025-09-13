@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: django
-        image: rashed271202/ticket_mgmt_system:v1.0
+        image: rashed271202/ticket_mgmt_system:v2.0
         ports:
         - containerPort: 8000
         envFrom:
