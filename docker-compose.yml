@@ -32,12 +32,16 @@ services:
     volumes:
       - .:/app
     environment:
-      - DB_HOST=mysql
-      - DB_NAME=ticket_system
-      - DB_USER=django_user
-      - DB_PASSWORD=djangopassword
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
+      DB_HOST: mysql
+      DB_NAME: ticket_system
+      DB_USER: django_user
+      DB_PASSWORD: my-secret-pw        # ✅ matches MySQL password
+      DB_PORT: 3306
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      DEBUG: "True"
+      SECRET_KEY: "your-secret-key"
+      ALLOWED_HOSTS: "*"
     depends_on:
       - mysql
       - redis

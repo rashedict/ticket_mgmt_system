@@ -15,7 +15,7 @@ spec:
       containers:
       - name: django
 <<<<<<< HEAD
-        image: rashed271202/ticket_mgmt_system:v10.0
+        image: rashed271202/ticket_mgmt_system:v1.0
 =======
         image: rashed271202/ticket_mgmt_system:v61
 >>>>>>> origin/main
