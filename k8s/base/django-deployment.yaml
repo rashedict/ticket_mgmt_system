@@ -15,9 +15,9 @@ spec:
       containers:
       - name: django
 <<<<<<< HEAD
-        image: rashed271202/ticket_mgmt_system:v18
+        image: rashed271202/ticket_mgmt_system:v19
 =======
-        image: rashed271202/ticket_mgmt_system:v18
+        image: rashed271202/ticket_mgmt_system:v19
 >>>>>>> origin/main
         ports:
         - containerPort: 8000
