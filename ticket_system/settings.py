@@ -54,15 +54,30 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'ticket_system.wsgi.application'
 
+# -----------------------------------------
+# Database (old Docker Compose / local settings)
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': os.environ.get("DB_NAME"),
+#         'USER': os.environ.get("DB_USER"),
+#         'PASSWORD': os.environ.get("DB_PASSWORD"),
+#         'HOST': os.environ.get("DB_HOST"),
+#         'PORT': os.environ.get("DB_PORT", "3306"),
+#         'OPTIONS': {
+#             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
+#         },
+#     }
+# }
 
-# Database (all from env / Secret)
+# Database (Kubernetes / env-friendly)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.environ.get("DB_NAME"),
-        'USER': os.environ.get("DB_USER"),
-        'PASSWORD': os.environ.get("DB_PASSWORD"),
-        'HOST': os.environ.get("DB_HOST"),
+        'NAME': os.environ.get("DB_NAME", "ticket_system"),
+        'USER': os.environ.get("DB_USER", "django_user"),
+        'PASSWORD': os.environ.get("DB_PASSWORD", "my-secret-pw"),
+        'HOST': os.environ.get("DB_HOST", "mysql"),  # K8s service name
         'PORT': os.environ.get("DB_PORT", "3306"),
         'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
@@ -70,11 +85,11 @@ DATABASES = {
     }
 }
 
-# Redis (from env / ConfigMap)
+# Redis cache (Kubernetes / env-friendly)
 CACHES = {
     'default': {
         'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': f"redis://{os.environ.get('REDIS_HOST')}:{os.environ.get('REDIS_PORT', '6379')}/1",
+        'LOCATION': f"redis://{os.environ.get('REDIS_HOST', 'redis')}:{os.environ.get('REDIS_PORT', '6379')}/1",
         'OPTIONS': {
             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
         }
@@ -92,6 +107,8 @@ USE_TZ = True
 
 # Static files
 STATIC_URL = '/static/'
+
+# Login URLs
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'login'

@@ -3,7 +3,6 @@ version: '3.8'
 services:
   mysql:
     image: mysql:8.0
-    container_name: mysql-container
     environment:
       MYSQL_ROOT_PASSWORD: rootpassword
       MYSQL_DATABASE: ticket_system
@@ -18,7 +17,6 @@ services:
 
   redis:
     image: redis:7-alpine
-    container_name: redis
     ports:
       - "6379:6379"
     networks:
@@ -26,7 +24,6 @@ services:
 
   django:
     build: .
-    container_name: django-app
     ports:
       - "8000:8000"
     volumes:
@@ -35,7 +32,7 @@ services:
       DB_HOST: mysql
       DB_NAME: ticket_system
       DB_USER: django_user
-      DB_PASSWORD: my-secret-pw        # ✅ matches MySQL password
+      DB_PASSWORD: my-secret-pw
       DB_PORT: 3306
       REDIS_HOST: redis
       REDIS_PORT: 6379
@@ -45,6 +42,13 @@ services:
     depends_on:
       - mysql
       - redis
+    command: >
+      /bin/bash -c "
+      python manage.py makemigrations &&
+      python manage.py migrate &&
+      python manage.py createsuperuser --noinput || true &&
+      python manage.py runserver 0.0.0.0:8000
+      "
     networks:
       - django-network
 
