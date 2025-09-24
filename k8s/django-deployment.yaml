@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: ticket_mgt_system-container
-          image: rashed271202/ticket_mgt_system:latest
+          image: rashed271202/ticket_mgt_system:v1
           ports:
             - containerPort: 8000
           envFrom:
