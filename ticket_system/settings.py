@@ -55,7 +55,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'ticket_system.wsgi.application'
 
 # -----------------------------------------
-# Database (old Docker Compose / local settings)
+#Database (Docker Compose / local settings)
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.mysql',
@@ -70,7 +70,7 @@ WSGI_APPLICATION = 'ticket_system.wsgi.application'
 #     }
 # }
 
-# Database (Kubernetes / env-friendly)
+# # Database (Kubernetes / env-friendly)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
