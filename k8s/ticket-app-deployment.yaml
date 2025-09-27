@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ticket_mgt_system
+  name: ticket-mgt-system
   namespace: ticket-mgt
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: ticket_mgt_system
+      app: ticket-mgt-system
   template:
     metadata:
       labels:
-        app: ticket_mgt_system
+        app: ticket-mgt-system
     spec:
       containers:
-        - name: ticket_mgt_system-container
+        - name: ticket-mgt-system-container
           image: rashed271202/ticket_mgt_system:v1
           ports:
             - containerPort: 8000
