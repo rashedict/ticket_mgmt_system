@@ -1,0 +1,19 @@
+# Install NFS server
+sudo apt-get update
+sudo apt-get install nfs-kernel-server -y
+
+# Create NFS directory
+sudo mkdir -p /data/nfs
+sudo chown nobody:nogroup /data/nfs
+sudo chmod 777 /data/nfs
+
+# Configure exports
+echo "/data/nfs 10.10.0.0/16(rw,sync,no_subtree_check,no_root_squash)" | sudo tee -a /etc/exports
+
+# Apply exports and restart service
+sudo exportfs -ra
+sudo systemctl restart nfs-kernel-server
+sudo systemctl enable nfs-kernel-server
+
+# Open firewall (if enabled)
+sudo ufw allow from 10.10.0.0/16 to any port nfs
