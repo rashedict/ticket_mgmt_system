@@ -29,11 +29,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: ticket_mgt_system
+  name: ticket-mgt-system
   namespace: ticket-mgt
 spec:
   selector:
-    app: ticket_mgt_system
+    app: ticket-mgt-system
   ports:
     - port: 8000
       targetPort: 8000
