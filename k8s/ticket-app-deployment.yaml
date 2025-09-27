@@ -18,11 +18,19 @@ spec:
           image: rashed271202/ticket_mgt_system:v1
           ports:
             - containerPort: 8000
+          env:
+            # Map DJANGO_SECRET_KEY from existing secret to SECRET_KEY
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: ticket-mgt-secrets
+                  key: DJANGO_SECRET_KEY
           envFrom:
-            - configMapRef:
-                name: ticket-mgt-config
+            # Keep other secrets/configs
             - secretRef:
                 name: ticket-mgt-secrets
+            - configMapRef:
+                name: ticket-mgt-config
           command: ["/bin/sh", "-c"]
           args:
             - |
