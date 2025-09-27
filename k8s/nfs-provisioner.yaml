@@ -35,3 +35,4 @@ spec:
         - name: nfs-client-root
           nfs:
             server: 10.10.1.21
+            path: /data/nfs
