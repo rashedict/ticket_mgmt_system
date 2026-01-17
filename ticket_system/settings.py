@@ -1,5 +1,7 @@
 import os
 from pathlib import Path
+import sys
+
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -114,3 +116,55 @@ LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'login'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# -----------------------------------------
+# LOGGING CONFIGURATION
+# -----------------------------------------
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+
+    "formatters": {
+        "default": {
+            "format": "[{asctime}] {levelname} {name}: {message}",
+            "style": "{",
+        },
+        "detailed": {
+            "format": "[{asctime}] {levelname} {name} ({process:d}): {message}",
+            "style": "{",
+        },
+    },
+
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "default",
+            "stream": sys.stdout,
+        },
+    },
+
+    "root": {
+        "handlers": ["console"],
+        "level": "INFO" if not DEBUG else "DEBUG",
+    },
+
+    "loggers": {
+        # Django internal logs
+        "django": {
+            "handlers": ["console"],
+            "level": "INFO" if not DEBUG else "DEBUG",
+            "propagate": False,
+        },
+        "django.request": {
+            "handlers": ["console"],
+            "level": "WARNING",
+            "propagate": False,
+        },
+        # Your application logs
+        "core": {
+            "handlers": ["console"],
+            "level": "DEBUG" if DEBUG else "INFO",
+            "propagate": False,
+        },
+    },
+}
